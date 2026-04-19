@@ -184,6 +184,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#rolling-origin-backtest" id="toc-rolling-origin-backtest" class="nav-link" data-scroll-target="#rolling-origin-backtest">Rolling-origin backtest</a></li>
   <li><a href="#when-does-jn.1-cross-80" id="toc-when-does-jn.1-cross-80" class="nav-link" data-scroll-target="#when-does-jn.1-cross-80">When does JN.1 cross 80 %?</a></li>
   <li><a href="#interpretation" id="toc-interpretation" class="nav-link" data-scroll-target="#interpretation">Interpretation</a></li>
+  <li><a href="#limitations" id="toc-limitations" class="nav-link" data-scroll-target="#limitations">Limitations</a></li>
   <li><a href="#about-this-analysis" id="toc-about-this-analysis" class="nav-link" data-scroll-target="#about-this-analysis">About this analysis</a></li>
   </ul>
 </nav>
@@ -479,18 +480,18 @@ Table&nbsp;1: Rolling-origin backtest scores for MLR.
 <tr class="odd">
 <td style="text-align: left;">mlr</td>
 <td style="text-align: right;">14</td>
-<td style="text-align: right;">0.099</td>
-<td style="text-align: right;">0.213</td>
+<td style="text-align: right;">0.100</td>
+<td style="text-align: right;">0.214</td>
 <td style="text-align: right;">0.641</td>
 <td style="text-align: right;">0.053</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">mlr</td>
 <td style="text-align: right;">28</td>
-<td style="text-align: right;">0.121</td>
-<td style="text-align: right;">0.253</td>
-<td style="text-align: right;">0.620</td>
-<td style="text-align: right;">0.064</td>
+<td style="text-align: right;">0.112</td>
+<td style="text-align: right;">0.233</td>
+<td style="text-align: right;">0.611</td>
+<td style="text-align: right;">0.065</td>
 </tr>
 </tbody>
 </table>
@@ -499,7 +500,7 @@ Table&nbsp;1: Rolling-origin backtest scores for MLR.
 </figure>
 </div>
 </div>
-<p>At a 14-day horizon, MLR achieves a mean absolute error of <strong>9.9%</strong> on lineage-share predictions and covers the true share in <strong>64%</strong> of cases — short of the nominal 95 %, reflecting that the naive MLR intervals under-account for over-dispersion in weekly counts. (Conformal recalibration, available in the <code>lineagefreq</code> development branch, is the usual remedy.) At 28 days MAE doubles roughly to <strong>12.1%</strong> — ordinary horizon-vs-accuracy drift.</p>
+<p>At a 14-day horizon, MLR achieves a mean absolute error of <strong>10.0%</strong> on lineage-share predictions and covers the true share in <strong>64%</strong> of cases — short of the nominal 95 %, reflecting that the naive MLR intervals under-account for over-dispersion in weekly counts. (Conformal recalibration, available in the <code>lineagefreq</code> development branch, is the usual remedy.) At 28 days MAE doubles roughly to <strong>11.2%</strong> — ordinary horizon-vs-accuracy drift.</p>
 </section>
 <section id="when-does-jn.1-cross-80" class="level2">
 <h2 class="anchored" data-anchor-id="when-does-jn.1-cross-80">When does JN.1 cross 80 %?</h2>
@@ -569,6 +570,10 @@ Figure&nbsp;4: Combined share of JN.1 and its first-wave descendants (JN.1, JN.1
 <p><strong>Engine choice.</strong> On national-only data the MLR and Piantham engines agree on the ranking of lineages by growth advantage and on which lineages are declining (HV.1, XBB.1.5) versus growing (JN.1 descendants). Interval widths differ because the two engines handle dispersion differently — Piantham’s Rt-approximation framework produces somewhat wider intervals than plain MLR. For location-stratified data, <code>hier_mlr</code> should be the default — the partial-pooling prior stabilises estimates in states with small weekly counts.</p>
 <p><strong>Forecast horizon.</strong> The backtest-calibrated message is: MLR’s 2-week projection is decision-ready (small error, reasonable coverage); the 4-week projection is directional (the winners are right; the exact numbers carry visibly more drift). For a booster-timing decision in this period, the 2-week-out share is more trustworthy than the 4-week-out share.</p>
 <p><strong>Decision-relevant answer.</strong> Under MLR on data through 22 6月 2024, JN.1-clade dominance (≥ 80 % of sequenced cases) is first reached on <strong>03 2月 2024</strong> in the combined observed-plus-forecast series. Any operational decision should pair this point estimate with the 95 % PI on individual lineage shares and re-run weekly as new CDC data posts.</p>
+</section>
+<section id="limitations" class="level2">
+<h2 class="anchored" data-anchor-id="limitations">Limitations</h2>
+<p>The national-level aggregation we use here masks substantial state- and regional-level heterogeneity in SARS-CoV-2 lineage evolution — JN.1 dominance arrived weeks earlier in some states than others, and any programme supporting <em>local</em> public-health decisions would want sub-national data rather than a national aggregate. CDC sequencing is also not a random sample of U.S. infections: certain states, sequencing labs, and healthcare systems are systematically overrepresented, which biases even the national aggregate in ways this analysis does not attempt to correct. The hierarchical MLR engine, which would borrow strength across locations and stabilise estimates in sparsely-sequenced regions, is therefore not demonstrated — it requires a <code>.location</code> column that the public CDC dataset does not expose. Finally, frequentist MLR assumes lineage growth rates are constant over the fitting window; when rates shift — a new descendant emerging mid-window, a fitness-modifying mutation at a known epitope — longer forecast horizons underperform in proportion, and the rolling-origin backtest quantifies this drift but does not remove it.</p>
 </section>
 <section id="about-this-analysis" class="level2">
 <h2 class="anchored" data-anchor-id="about-this-analysis">About this analysis</h2>
@@ -1406,21 +1411,40 @@ loaded via a namespace (and not attached):
 <span id="cb14-326"><a href="#cb14-326" aria-hidden="true" tabindex="-1"></a>this point estimate with the 95 % PI on individual lineage shares</span>
 <span id="cb14-327"><a href="#cb14-327" aria-hidden="true" tabindex="-1"></a>and re-run weekly as new CDC data posts.</span>
 <span id="cb14-328"><a href="#cb14-328" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-329"><a href="#cb14-329" aria-hidden="true" tabindex="-1"></a><span class="fu">## About this analysis</span></span>
+<span id="cb14-329"><a href="#cb14-329" aria-hidden="true" tabindex="-1"></a><span class="fu">## Limitations</span></span>
 <span id="cb14-330"><a href="#cb14-330" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-331"><a href="#cb14-331" aria-hidden="true" tabindex="-1"></a>::: {.callout-note appearance="minimal" collapse="true"}</span>
-<span id="cb14-332"><a href="#cb14-332" aria-hidden="true" tabindex="-1"></a><span class="fu">## Environment</span></span>
-<span id="cb14-333"><a href="#cb14-333" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Author:** Cuiwei Gao</span>
-<span id="cb14-334"><a href="#cb14-334" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Date:** 2026-04-19</span>
-<span id="cb14-335"><a href="#cb14-335" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Package:** <span class="in">`lineagefreq`</span> v<span class="in">`r packageVersion("lineagefreq")`</span></span>
-<span id="cb14-336"><a href="#cb14-336" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Data:** CDC Variant Proportions (<span class="in">`cdc_sarscov2_jn1`</span>), public domain</span>
-<span id="cb14-337"><a href="#cb14-337" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Source:** <span class="co">[</span><span class="ot">github.com/CuiweiG/portfolio</span><span class="co">](https://github.com/CuiweiG/portfolio/tree/main/01-variant-forecasting)</span></span>
-<span id="cb14-338"><a href="#cb14-338" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-341"><a href="#cb14-341" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb14-342"><a href="#cb14-342" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: session</span></span>
-<span id="cb14-343"><a href="#cb14-343" aria-hidden="true" tabindex="-1"></a><span class="fu">sessionInfo</span>()</span>
-<span id="cb14-344"><a href="#cb14-344" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb14-345"><a href="#cb14-345" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb14-331"><a href="#cb14-331" aria-hidden="true" tabindex="-1"></a>The national-level aggregation we use here masks substantial state- and</span>
+<span id="cb14-332"><a href="#cb14-332" aria-hidden="true" tabindex="-1"></a>regional-level heterogeneity in SARS-CoV-2 lineage evolution — JN.1 dominance</span>
+<span id="cb14-333"><a href="#cb14-333" aria-hidden="true" tabindex="-1"></a>arrived weeks earlier in some states than others, and any programme supporting</span>
+<span id="cb14-334"><a href="#cb14-334" aria-hidden="true" tabindex="-1"></a>*local* public-health decisions would want sub-national data rather than a</span>
+<span id="cb14-335"><a href="#cb14-335" aria-hidden="true" tabindex="-1"></a>national aggregate. CDC sequencing is also not a random sample of U.S.</span>
+<span id="cb14-336"><a href="#cb14-336" aria-hidden="true" tabindex="-1"></a>infections: certain states, sequencing labs, and healthcare systems are</span>
+<span id="cb14-337"><a href="#cb14-337" aria-hidden="true" tabindex="-1"></a>systematically overrepresented, which biases even the national aggregate in</span>
+<span id="cb14-338"><a href="#cb14-338" aria-hidden="true" tabindex="-1"></a>ways this analysis does not attempt to correct. The hierarchical MLR engine,</span>
+<span id="cb14-339"><a href="#cb14-339" aria-hidden="true" tabindex="-1"></a>which would borrow strength across locations and stabilise estimates in</span>
+<span id="cb14-340"><a href="#cb14-340" aria-hidden="true" tabindex="-1"></a>sparsely-sequenced regions, is therefore not demonstrated — it requires a</span>
+<span id="cb14-341"><a href="#cb14-341" aria-hidden="true" tabindex="-1"></a><span class="in">`.location`</span> column that the public CDC dataset does not expose. Finally,</span>
+<span id="cb14-342"><a href="#cb14-342" aria-hidden="true" tabindex="-1"></a>frequentist MLR assumes lineage growth rates are constant over the fitting</span>
+<span id="cb14-343"><a href="#cb14-343" aria-hidden="true" tabindex="-1"></a>window; when rates shift — a new descendant emerging mid-window, a</span>
+<span id="cb14-344"><a href="#cb14-344" aria-hidden="true" tabindex="-1"></a>fitness-modifying mutation at a known epitope — longer forecast horizons</span>
+<span id="cb14-345"><a href="#cb14-345" aria-hidden="true" tabindex="-1"></a>underperform in proportion, and the rolling-origin backtest quantifies this</span>
+<span id="cb14-346"><a href="#cb14-346" aria-hidden="true" tabindex="-1"></a>drift but does not remove it.</span>
+<span id="cb14-347"><a href="#cb14-347" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-348"><a href="#cb14-348" aria-hidden="true" tabindex="-1"></a><span class="fu">## About this analysis</span></span>
+<span id="cb14-349"><a href="#cb14-349" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-350"><a href="#cb14-350" aria-hidden="true" tabindex="-1"></a>::: {.callout-note appearance="minimal" collapse="true"}</span>
+<span id="cb14-351"><a href="#cb14-351" aria-hidden="true" tabindex="-1"></a><span class="fu">## Environment</span></span>
+<span id="cb14-352"><a href="#cb14-352" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Author:** Cuiwei Gao</span>
+<span id="cb14-353"><a href="#cb14-353" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Date:** 2026-04-19</span>
+<span id="cb14-354"><a href="#cb14-354" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Package:** <span class="in">`lineagefreq`</span> v<span class="in">`r packageVersion("lineagefreq")`</span></span>
+<span id="cb14-355"><a href="#cb14-355" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Data:** CDC Variant Proportions (<span class="in">`cdc_sarscov2_jn1`</span>), public domain</span>
+<span id="cb14-356"><a href="#cb14-356" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Source:** <span class="co">[</span><span class="ot">github.com/CuiweiG/portfolio</span><span class="co">](https://github.com/CuiweiG/portfolio/tree/main/01-variant-forecasting)</span></span>
+<span id="cb14-357"><a href="#cb14-357" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-360"><a href="#cb14-360" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb14-361"><a href="#cb14-361" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: session</span></span>
+<span id="cb14-362"><a href="#cb14-362" aria-hidden="true" tabindex="-1"></a><span class="fu">sessionInfo</span>()</span>
+<span id="cb14-363"><a href="#cb14-363" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb14-364"><a href="#cb14-364" aria-hidden="true" tabindex="-1"></a>:::</span>
 </code></pre></div><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
 </div></div></div></div></div>
 </div> <!-- /content -->

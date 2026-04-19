@@ -302,6 +302,25 @@ observed-plus-forecast series. Any operational decision should pair
 this point estimate with the 95 % PI on individual lineage shares
 and re-run weekly as new CDC data posts.
 
+## Limitations
+
+The national-level aggregation we use here masks substantial state- and
+regional-level heterogeneity in SARS-CoV-2 lineage evolution — JN.1 dominance
+arrived weeks earlier in some states than others, and any programme supporting
+*local* public-health decisions would want sub-national data rather than a
+national aggregate. CDC sequencing is also not a random sample of U.S.
+infections: certain states, sequencing labs, and healthcare systems are
+systematically overrepresented, which biases even the national aggregate in
+ways this analysis does not attempt to correct. The hierarchical MLR engine,
+which would borrow strength across locations and stabilise estimates in
+sparsely-sequenced regions, is therefore not demonstrated — it requires a
+`.location` column that the public CDC dataset does not expose. Finally,
+frequentist MLR assumes lineage growth rates are constant over the fitting
+window; when rates shift — a new descendant emerging mid-window, a
+fitness-modifying mutation at a known epitope — longer forecast horizons
+underperform in proportion, and the rolling-origin backtest quantifies this
+drift but does not remove it.
+
 ## About this analysis
 
 ::: {.callout-note appearance="minimal" collapse="true"}

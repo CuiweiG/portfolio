@@ -184,6 +184,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#step-5-threshold-optimisation" id="toc-step-5-threshold-optimisation" class="nav-link" data-scroll-target="#step-5-threshold-optimisation">Step 5 — Threshold optimisation</a></li>
   <li><a href="#interpretation-the-impossibility-result-in-plain-terms" id="toc-interpretation-the-impossibility-result-in-plain-terms" class="nav-link" data-scroll-target="#interpretation-the-impossibility-result-in-plain-terms">Interpretation: the impossibility result in plain terms</a></li>
   <li><a href="#transfer-back-to-the-clinical-setting" id="toc-transfer-back-to-the-clinical-setting" class="nav-link" data-scroll-target="#transfer-back-to-the-clinical-setting">Transfer back to the clinical setting</a></li>
+  <li><a href="#limitations" id="toc-limitations" class="nav-link" data-scroll-target="#limitations">Limitations</a></li>
   <li><a href="#about-this-analysis" id="toc-about-this-analysis" class="nav-link" data-scroll-target="#about-this-analysis">About this analysis</a></li>
   </ul>
 </nav>
@@ -448,6 +449,10 @@ Figure&nbsp;4: Selection rate by group before (global threshold 0.5) and after t
 <span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a><span class="fu">fairness_report</span>(fd)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p><code>clinicalfair</code> is deliberately <strong>model-agnostic</strong>. It doesn’t care whether the score came from logistic regression, gradient boosting, or a vendor black-box — only that predictions and outcomes share an index. That constraint — not access to training code, only access to outputs — is what makes it suitable for audits of deployed systems, which are typically the ones actually affecting patients.</p>
+</section>
+<section id="limitations" class="level2">
+<h2 class="anchored" data-anchor-id="limitations">Limitations</h2>
+<p>The <code>compas_sim</code> dataset records race as a binary Black/White attribute, analytically convenient but not representative of clinical populations: real audits must handle multi-category race and ethnicity, insurance status, primary language, and their intersections, each of which introduces smaller per-cell sample sizes and ethical questions about which axes to prioritise that a two-group worked example cannot surface. The mathematical impossibility result (<a href="https://doi.org/10.1089/big.2016.0047">Chouldechova 2017</a>) means satisfying both calibration parity and equalised odds when base rates differ is formally infeasible; the choice between them is a value judgement rather than a modelling one, and <code>clinicalfair</code> is deliberately agnostic about which to prefer. The threshold-optimisation policy we apply was fit on the same data it is evaluated on; out-of-sample performance typically degrades, and production use should validate on a held-out cohort. Finally, an audit is a diagnosis, not a prescription — identifying a disparity leaves open whether the appropriate response is threshold adjustment, model redesign, better training data, or not deploying the model at all.</p>
 </section>
 <section id="about-this-analysis" class="level2">
 <h2 class="anchored" data-anchor-id="about-this-analysis">About this analysis</h2>
@@ -1235,21 +1240,40 @@ loaded via a namespace (and not attached):
 <span id="cb15-276"><a href="#cb15-276" aria-hidden="true" tabindex="-1"></a>deployed systems, which are typically the ones actually affecting</span>
 <span id="cb15-277"><a href="#cb15-277" aria-hidden="true" tabindex="-1"></a>patients.</span>
 <span id="cb15-278"><a href="#cb15-278" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-279"><a href="#cb15-279" aria-hidden="true" tabindex="-1"></a><span class="fu">## About this analysis</span></span>
+<span id="cb15-279"><a href="#cb15-279" aria-hidden="true" tabindex="-1"></a><span class="fu">## Limitations</span></span>
 <span id="cb15-280"><a href="#cb15-280" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-281"><a href="#cb15-281" aria-hidden="true" tabindex="-1"></a>::: {.callout-note appearance="minimal" collapse="true"}</span>
-<span id="cb15-282"><a href="#cb15-282" aria-hidden="true" tabindex="-1"></a><span class="fu">## Environment</span></span>
-<span id="cb15-283"><a href="#cb15-283" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Author:** Cuiwei Gao</span>
-<span id="cb15-284"><a href="#cb15-284" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Date:** 2026-04-19</span>
-<span id="cb15-285"><a href="#cb15-285" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Package:** <span class="in">`clinicalfair`</span> v<span class="in">`r packageVersion("clinicalfair")`</span></span>
-<span id="cb15-286"><a href="#cb15-286" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Data:** <span class="in">`compas_sim`</span>, based on ProPublica's COMPAS investigation (Angwin et al. 2016)</span>
-<span id="cb15-287"><a href="#cb15-287" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Source:** <span class="co">[</span><span class="ot">github.com/CuiweiG/portfolio</span><span class="co">](https://github.com/CuiweiG/portfolio/tree/main/02-fair-clinical-prediction)</span></span>
-<span id="cb15-288"><a href="#cb15-288" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-291"><a href="#cb15-291" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb15-292"><a href="#cb15-292" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: session</span></span>
-<span id="cb15-293"><a href="#cb15-293" aria-hidden="true" tabindex="-1"></a><span class="fu">sessionInfo</span>()</span>
-<span id="cb15-294"><a href="#cb15-294" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb15-295"><a href="#cb15-295" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb15-281"><a href="#cb15-281" aria-hidden="true" tabindex="-1"></a>The <span class="in">`compas_sim`</span> dataset records race as a binary Black/White attribute,</span>
+<span id="cb15-282"><a href="#cb15-282" aria-hidden="true" tabindex="-1"></a>analytically convenient but not representative of clinical populations: real</span>
+<span id="cb15-283"><a href="#cb15-283" aria-hidden="true" tabindex="-1"></a>audits must handle multi-category race and ethnicity, insurance status,</span>
+<span id="cb15-284"><a href="#cb15-284" aria-hidden="true" tabindex="-1"></a>primary language, and their intersections, each of which introduces smaller</span>
+<span id="cb15-285"><a href="#cb15-285" aria-hidden="true" tabindex="-1"></a>per-cell sample sizes and ethical questions about which axes to prioritise</span>
+<span id="cb15-286"><a href="#cb15-286" aria-hidden="true" tabindex="-1"></a>that a two-group worked example cannot surface. The mathematical impossibility</span>
+<span id="cb15-287"><a href="#cb15-287" aria-hidden="true" tabindex="-1"></a>result (<span class="co">[</span><span class="ot">Chouldechova 2017</span><span class="co">](https://doi.org/10.1089/big.2016.0047)</span>) means</span>
+<span id="cb15-288"><a href="#cb15-288" aria-hidden="true" tabindex="-1"></a>satisfying both calibration parity and equalised odds when base rates differ</span>
+<span id="cb15-289"><a href="#cb15-289" aria-hidden="true" tabindex="-1"></a>is formally infeasible; the choice between them is a value judgement rather</span>
+<span id="cb15-290"><a href="#cb15-290" aria-hidden="true" tabindex="-1"></a>than a modelling one, and <span class="in">`clinicalfair`</span> is deliberately agnostic about</span>
+<span id="cb15-291"><a href="#cb15-291" aria-hidden="true" tabindex="-1"></a>which to prefer. The threshold-optimisation policy we apply was fit on the</span>
+<span id="cb15-292"><a href="#cb15-292" aria-hidden="true" tabindex="-1"></a>same data it is evaluated on; out-of-sample performance typically degrades,</span>
+<span id="cb15-293"><a href="#cb15-293" aria-hidden="true" tabindex="-1"></a>and production use should validate on a held-out cohort. Finally, an audit is</span>
+<span id="cb15-294"><a href="#cb15-294" aria-hidden="true" tabindex="-1"></a>a diagnosis, not a prescription — identifying a disparity leaves open whether</span>
+<span id="cb15-295"><a href="#cb15-295" aria-hidden="true" tabindex="-1"></a>the appropriate response is threshold adjustment, model redesign, better</span>
+<span id="cb15-296"><a href="#cb15-296" aria-hidden="true" tabindex="-1"></a>training data, or not deploying the model at all.</span>
+<span id="cb15-297"><a href="#cb15-297" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-298"><a href="#cb15-298" aria-hidden="true" tabindex="-1"></a><span class="fu">## About this analysis</span></span>
+<span id="cb15-299"><a href="#cb15-299" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-300"><a href="#cb15-300" aria-hidden="true" tabindex="-1"></a>::: {.callout-note appearance="minimal" collapse="true"}</span>
+<span id="cb15-301"><a href="#cb15-301" aria-hidden="true" tabindex="-1"></a><span class="fu">## Environment</span></span>
+<span id="cb15-302"><a href="#cb15-302" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Author:** Cuiwei Gao</span>
+<span id="cb15-303"><a href="#cb15-303" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Date:** 2026-04-19</span>
+<span id="cb15-304"><a href="#cb15-304" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Package:** <span class="in">`clinicalfair`</span> v<span class="in">`r packageVersion("clinicalfair")`</span></span>
+<span id="cb15-305"><a href="#cb15-305" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Data:** <span class="in">`compas_sim`</span>, based on ProPublica's COMPAS investigation (Angwin et al. 2016)</span>
+<span id="cb15-306"><a href="#cb15-306" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Source:** <span class="co">[</span><span class="ot">github.com/CuiweiG/portfolio</span><span class="co">](https://github.com/CuiweiG/portfolio/tree/main/02-fair-clinical-prediction)</span></span>
+<span id="cb15-307"><a href="#cb15-307" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-310"><a href="#cb15-310" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb15-311"><a href="#cb15-311" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: session</span></span>
+<span id="cb15-312"><a href="#cb15-312" aria-hidden="true" tabindex="-1"></a><span class="fu">sessionInfo</span>()</span>
+<span id="cb15-313"><a href="#cb15-313" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb15-314"><a href="#cb15-314" aria-hidden="true" tabindex="-1"></a>:::</span>
 </code></pre></div><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
 </div></div></div></div></div>
 </div> <!-- /content -->

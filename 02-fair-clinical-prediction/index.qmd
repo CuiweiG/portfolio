@@ -256,6 +256,25 @@ access to outputs — is what makes it suitable for audits of
 deployed systems, which are typically the ones actually affecting
 patients.
 
+## Limitations
+
+The `compas_sim` dataset records race as a binary Black/White attribute,
+analytically convenient but not representative of clinical populations: real
+audits must handle multi-category race and ethnicity, insurance status,
+primary language, and their intersections, each of which introduces smaller
+per-cell sample sizes and ethical questions about which axes to prioritise
+that a two-group worked example cannot surface. The mathematical impossibility
+result ([Chouldechova 2017](https://doi.org/10.1089/big.2016.0047)) means
+satisfying both calibration parity and equalised odds when base rates differ
+is formally infeasible; the choice between them is a value judgement rather
+than a modelling one, and `clinicalfair` is deliberately agnostic about
+which to prefer. The threshold-optimisation policy we apply was fit on the
+same data it is evaluated on; out-of-sample performance typically degrades,
+and production use should validate on a held-out cohort. Finally, an audit is
+a diagnosis, not a prescription — identifying a disparity leaves open whether
+the appropriate response is threshold adjustment, model redesign, better
+training data, or not deploying the model at all.
+
 ## About this analysis
 
 ::: {.callout-note appearance="minimal" collapse="true"}

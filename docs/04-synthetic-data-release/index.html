@@ -183,6 +183,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#step-4-privacy-utility-pareto-plot" id="toc-step-4-privacy-utility-pareto-plot" class="nav-link" data-scroll-target="#step-4-privacy-utility-pareto-plot">Step 4 — Privacy-utility Pareto plot</a></li>
   <li><a href="#step-5-does-the-synthetic-data-preserve-predictive-signal" id="toc-step-5-does-the-synthetic-data-preserve-predictive-signal" class="nav-link" data-scroll-target="#step-5-does-the-synthetic-data-preserve-predictive-signal">Step 5 — Does the synthetic data preserve predictive signal?</a></li>
   <li><a href="#interpretation" id="toc-interpretation" class="nav-link" data-scroll-target="#interpretation">Interpretation</a></li>
+  <li><a href="#limitations" id="toc-limitations" class="nav-link" data-scroll-target="#limitations">Limitations</a></li>
   <li><a href="#about-this-analysis" id="toc-about-this-analysis" class="nav-link" data-scroll-target="#about-this-analysis">About this analysis</a></li>
   </ul>
 </nav>
@@ -577,6 +578,10 @@ Figure&nbsp;3: Downstream model AUC (30-day readmission on SBP + glucose + other
 </tr>
 </tbody>
 </table>
+</section>
+<section id="limitations" class="level2">
+<h2 class="anchored" data-anchor-id="limitations">Limitations</h2>
+<p>The Gaussian copula assumes each continuous marginal can be transformed to a standard normal — a good approximation for lab values and anthropometrics but a poor fit for highly-skewed counts (hospital length of stay), bounded proportions, or values clustered at detection limits; for those, a non-parametric or mixed-distribution synthesiser would be preferable. The nearest-neighbour distance ratio and membership-inference accuracy we report are <em>empirical</em> privacy measures, not formal differential-privacy guarantees, and do not bound the ε a regulator might ask for. The <code>model_fidelity()</code> test covers one downstream task — a logistic regression for 30-day readmission on numeric predictors; tree-based classifiers, survival models, and deep networks may transfer differently, and a production use-case should validate the specific downstream task it will support. Finally, all three generators are evaluated on cross-sectional data only; longitudinal data (EHR time stamps, multiple visits per patient, time-varying covariates) violates the i.i.d. assumption all three methods rely on and calls for sequence-aware generators not covered here.</p>
 </section>
 <section id="about-this-analysis" class="level2">
 <h2 class="anchored" data-anchor-id="about-this-analysis">About this analysis</h2>
@@ -1402,21 +1407,40 @@ loaded via a namespace (and not attached):
 <span id="cb13-311"><a href="#cb13-311" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Internal model-development sandbox           <span class="pp">|</span> Bootstrap (<span class="in">`bootstrap`</span>)       <span class="pp">|</span></span>
 <span id="cb13-312"><a href="#cb13-312" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Aggregate-statistic release to the public    <span class="pp">|</span> Laplace noise (<span class="in">`noise`</span>), with noise scale tuned to a target ε <span class="pp">|</span></span>
 <span id="cb13-313"><a href="#cb13-313" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-314"><a href="#cb13-314" aria-hidden="true" tabindex="-1"></a><span class="fu">## About this analysis</span></span>
+<span id="cb13-314"><a href="#cb13-314" aria-hidden="true" tabindex="-1"></a><span class="fu">## Limitations</span></span>
 <span id="cb13-315"><a href="#cb13-315" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-316"><a href="#cb13-316" aria-hidden="true" tabindex="-1"></a>::: {.callout-note appearance="minimal" collapse="true"}</span>
-<span id="cb13-317"><a href="#cb13-317" aria-hidden="true" tabindex="-1"></a><span class="fu">## Environment</span></span>
-<span id="cb13-318"><a href="#cb13-318" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Author:** Cuiwei Gao</span>
-<span id="cb13-319"><a href="#cb13-319" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Date:** 2026-04-19</span>
-<span id="cb13-320"><a href="#cb13-320" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Package:** <span class="in">`syntheticdata`</span> v<span class="in">`r packageVersion("syntheticdata")`</span></span>
-<span id="cb13-321"><a href="#cb13-321" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Data:** 500-patient simulated clinical cohort generated inline with <span class="in">`set.seed(42)`</span></span>
-<span id="cb13-322"><a href="#cb13-322" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Source:** <span class="co">[</span><span class="ot">github.com/CuiweiG/portfolio</span><span class="co">](https://github.com/CuiweiG/portfolio/tree/main/04-synthetic-data-release)</span></span>
-<span id="cb13-323"><a href="#cb13-323" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-326"><a href="#cb13-326" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb13-327"><a href="#cb13-327" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: session</span></span>
-<span id="cb13-328"><a href="#cb13-328" aria-hidden="true" tabindex="-1"></a><span class="fu">sessionInfo</span>()</span>
-<span id="cb13-329"><a href="#cb13-329" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb13-330"><a href="#cb13-330" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb13-316"><a href="#cb13-316" aria-hidden="true" tabindex="-1"></a>The Gaussian copula assumes each continuous marginal can be transformed to a</span>
+<span id="cb13-317"><a href="#cb13-317" aria-hidden="true" tabindex="-1"></a>standard normal — a good approximation for lab values and anthropometrics</span>
+<span id="cb13-318"><a href="#cb13-318" aria-hidden="true" tabindex="-1"></a>but a poor fit for highly-skewed counts (hospital length of stay), bounded</span>
+<span id="cb13-319"><a href="#cb13-319" aria-hidden="true" tabindex="-1"></a>proportions, or values clustered at detection limits; for those, a</span>
+<span id="cb13-320"><a href="#cb13-320" aria-hidden="true" tabindex="-1"></a>non-parametric or mixed-distribution synthesiser would be preferable. The</span>
+<span id="cb13-321"><a href="#cb13-321" aria-hidden="true" tabindex="-1"></a>nearest-neighbour distance ratio and membership-inference accuracy we report</span>
+<span id="cb13-322"><a href="#cb13-322" aria-hidden="true" tabindex="-1"></a>are *empirical* privacy measures, not formal differential-privacy guarantees,</span>
+<span id="cb13-323"><a href="#cb13-323" aria-hidden="true" tabindex="-1"></a>and do not bound the ε a regulator might ask for. The <span class="in">`model_fidelity()`</span></span>
+<span id="cb13-324"><a href="#cb13-324" aria-hidden="true" tabindex="-1"></a>test covers one downstream task — a logistic regression for 30-day</span>
+<span id="cb13-325"><a href="#cb13-325" aria-hidden="true" tabindex="-1"></a>readmission on numeric predictors; tree-based classifiers, survival models,</span>
+<span id="cb13-326"><a href="#cb13-326" aria-hidden="true" tabindex="-1"></a>and deep networks may transfer differently, and a production use-case should</span>
+<span id="cb13-327"><a href="#cb13-327" aria-hidden="true" tabindex="-1"></a>validate the specific downstream task it will support. Finally, all three</span>
+<span id="cb13-328"><a href="#cb13-328" aria-hidden="true" tabindex="-1"></a>generators are evaluated on cross-sectional data only; longitudinal data</span>
+<span id="cb13-329"><a href="#cb13-329" aria-hidden="true" tabindex="-1"></a>(EHR time stamps, multiple visits per patient, time-varying covariates)</span>
+<span id="cb13-330"><a href="#cb13-330" aria-hidden="true" tabindex="-1"></a>violates the i.i.d. assumption all three methods rely on and calls for</span>
+<span id="cb13-331"><a href="#cb13-331" aria-hidden="true" tabindex="-1"></a>sequence-aware generators not covered here.</span>
+<span id="cb13-332"><a href="#cb13-332" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-333"><a href="#cb13-333" aria-hidden="true" tabindex="-1"></a><span class="fu">## About this analysis</span></span>
+<span id="cb13-334"><a href="#cb13-334" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-335"><a href="#cb13-335" aria-hidden="true" tabindex="-1"></a>::: {.callout-note appearance="minimal" collapse="true"}</span>
+<span id="cb13-336"><a href="#cb13-336" aria-hidden="true" tabindex="-1"></a><span class="fu">## Environment</span></span>
+<span id="cb13-337"><a href="#cb13-337" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Author:** Cuiwei Gao</span>
+<span id="cb13-338"><a href="#cb13-338" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Date:** 2026-04-19</span>
+<span id="cb13-339"><a href="#cb13-339" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Package:** <span class="in">`syntheticdata`</span> v<span class="in">`r packageVersion("syntheticdata")`</span></span>
+<span id="cb13-340"><a href="#cb13-340" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Data:** 500-patient simulated clinical cohort generated inline with <span class="in">`set.seed(42)`</span></span>
+<span id="cb13-341"><a href="#cb13-341" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Source:** <span class="co">[</span><span class="ot">github.com/CuiweiG/portfolio</span><span class="co">](https://github.com/CuiweiG/portfolio/tree/main/04-synthetic-data-release)</span></span>
+<span id="cb13-342"><a href="#cb13-342" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-345"><a href="#cb13-345" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb13-346"><a href="#cb13-346" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: session</span></span>
+<span id="cb13-347"><a href="#cb13-347" aria-hidden="true" tabindex="-1"></a><span class="fu">sessionInfo</span>()</span>
+<span id="cb13-348"><a href="#cb13-348" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb13-349"><a href="#cb13-349" aria-hidden="true" tabindex="-1"></a>:::</span>
 </code></pre></div><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
 </div></div></div></div></div>
 </div> <!-- /content -->

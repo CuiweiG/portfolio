@@ -293,6 +293,25 @@ only needs aggregate summaries, not individual-record realism.
 | Internal model-development sandbox           | Bootstrap (`bootstrap`)       |
 | Aggregate-statistic release to the public    | Laplace noise (`noise`), with noise scale tuned to a target ε |
 
+## Limitations
+
+The Gaussian copula assumes each continuous marginal can be transformed to a
+standard normal — a good approximation for lab values and anthropometrics
+but a poor fit for highly-skewed counts (hospital length of stay), bounded
+proportions, or values clustered at detection limits; for those, a
+non-parametric or mixed-distribution synthesiser would be preferable. The
+nearest-neighbour distance ratio and membership-inference accuracy we report
+are *empirical* privacy measures, not formal differential-privacy guarantees,
+and do not bound the ε a regulator might ask for. The `model_fidelity()`
+test covers one downstream task — a logistic regression for 30-day
+readmission on numeric predictors; tree-based classifiers, survival models,
+and deep networks may transfer differently, and a production use-case should
+validate the specific downstream task it will support. Finally, all three
+generators are evaluated on cross-sectional data only; longitudinal data
+(EHR time stamps, multiple visits per patient, time-varying covariates)
+violates the i.i.d. assumption all three methods rely on and calls for
+sequence-aware generators not covered here.
+
 ## About this analysis
 
 ::: {.callout-note appearance="minimal" collapse="true"}

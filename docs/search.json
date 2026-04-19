@@ -19,5 +19,82 @@
     "title": "Cuiwei Gao — Portfolio",
     "section": "About",
     "text": "About\nWritten and maintained by Cuiwei Gao. Based in London. Research interests: R package development for biostatistics and public health, genomic surveillance methodology, algorithmic fairness in clinical AI, and privacy-preserving synthetic clinical data.\nSource for every analysis: github.com/CuiweiG/portfolio."
+  },
+  {
+    "objectID": "01-variant-forecasting/index.html",
+    "href": "01-variant-forecasting/index.html",
+    "title": "Forecasting SARS-CoV-2 Variant Dominance",
+    "section": "",
+    "text": "In late 2023 the SARS-CoV-2 lineage JN.1 emerged from BA.2.86 and began displacing HV.1 across U.S. sequencing. Public-health teams making decisions about booster messaging, diagnostic panels, and surge capacity need answers to two questions:\n\nHow fast is each new lineage growing relative to the incumbent population?\nWhen will it reach dominance — say, the 80 % threshold that triggers vaccine-composition review in some committees?\n\nThis case study applies the lineagefreq package (CRAN 0.2.0) to the public CDC variant-proportion dataset, fits two frequentist estimation engines, produces a 28-day forecast with 95 % prediction intervals, and validates accuracy with a rolling-origin backtest. The goal is a decision-relevant answer to “when does JN.1 cross 80 %?” with calibrated uncertainty."
+  },
+  {
+    "objectID": "01-variant-forecasting/index.html#motivation",
+    "href": "01-variant-forecasting/index.html#motivation",
+    "title": "Forecasting SARS-CoV-2 Variant Dominance",
+    "section": "",
+    "text": "In late 2023 the SARS-CoV-2 lineage JN.1 emerged from BA.2.86 and began displacing HV.1 across U.S. sequencing. Public-health teams making decisions about booster messaging, diagnostic panels, and surge capacity need answers to two questions:\n\nHow fast is each new lineage growing relative to the incumbent population?\nWhen will it reach dominance — say, the 80 % threshold that triggers vaccine-composition review in some committees?\n\nThis case study applies the lineagefreq package (CRAN 0.2.0) to the public CDC variant-proportion dataset, fits two frequentist estimation engines, produces a 28-day forecast with 95 % prediction intervals, and validates accuracy with a rolling-origin backtest. The goal is a decision-relevant answer to “when does JN.1 cross 80 %?” with calibrated uncertainty."
+  },
+  {
+    "objectID": "01-variant-forecasting/index.html#data",
+    "href": "01-variant-forecasting/index.html#data",
+    "title": "Forecasting SARS-CoV-2 Variant Dominance",
+    "section": "Data",
+    "text": "Data\n\n\nCode\nsuppressPackageStartupMessages({\n  library(lineagefreq)\n  library(ggplot2)\n  library(dplyr)\n})\n\ndata(cdc_sarscov2_jn1)\n\n\ncdc_sarscov2_jn1 is a curated subset of public U.S. CDC variant proportions (data.cdc.gov/jr58-6ysp), shipped with lineagefreq.\n\n\nCode\ncdc_sarscov2_jn1 |&gt;\n  summarise(\n    n_rows       = n(),\n    n_lineages   = n_distinct(lineage),\n    date_from    = min(date),\n    date_to      = max(date),\n    total_counts = sum(count)\n  )\n\n\n  n_rows n_lineages  date_from    date_to total_counts\n1    171          9 2023-10-14 2024-06-22       152000\n\n\nThe dataset is national — there is no sub-national stratification. This matters for engine choice (see Methods)."
+  },
+  {
+    "objectID": "01-variant-forecasting/index.html#observed-trajectories",
+    "href": "01-variant-forecasting/index.html#observed-trajectories",
+    "title": "Forecasting SARS-CoV-2 Variant Dominance",
+    "section": "Observed trajectories",
+    "text": "Observed trajectories\n\n\nCode\nx  &lt;- lfq_data(cdc_sarscov2_jn1, lineage = lineage, date = date, count = count)\nx2 &lt;- collapse_lineages(x, min_freq = 0.02)\n\n# as.data.frame() prefixes columns with '.' — rename for plotting clarity\nobs &lt;- as.data.frame(x2) |&gt;\n  rename(date = .date, lineage = .lineage, proportion = .freq)\n\nggplot(obs, aes(x = date, y = proportion, fill = lineage)) +\n  geom_area(alpha = 0.9, colour = \"white\", linewidth = 0.15) +\n  scale_fill_viridis_d(option = \"turbo\", name = NULL) +\n  scale_y_continuous(labels = scales::percent_format(accuracy = 1),\n                     expand = c(0, 0)) +\n  scale_x_date(expand = c(0, 0)) +\n  labs(x = NULL, y = \"Observed share\") +\n  theme_minimal(base_size = 12) +\n  theme(panel.grid.minor = element_blank())\n\n\n\n\n\n\n\n\nFigure 1: Observed weekly CDC-sequenced lineage shares, Oct 2023–Jun 2024. JN.1 emerges from under 1% in October and surpasses 80% by mid-February 2024, with KP.2 and KP.3 descendants rising afterwards."
+  },
+  {
+    "objectID": "01-variant-forecasting/index.html#methods-which-engine",
+    "href": "01-variant-forecasting/index.html#methods-which-engine",
+    "title": "Forecasting SARS-CoV-2 Variant Dominance",
+    "section": "Methods: which engine?",
+    "text": "Methods: which engine?\nlineagefreq exposes five engines. The two frequentist engines that operate on single-location data are demonstrated here:\n\n\n\n\n\n\n\n\n\nEngine\nType\nData needed\nWhat it estimates\n\n\n\n\nmlr\nMultinomial logit\nsingle location\nper-lineage growth slope\n\n\npiantham\nRt approximation\nsingle location\nRt-based growth advantage (Piantham et al.)\n\n\nhier_mlr\nHierarchical MLR\nmulti-location (.location column)\npartial-pooled location + overall growth\n\n\n\nhier_mlr is not demonstrated because the CDC dataset is national-only. In practice one would pass an HHS-region or state-level location column to lfq_data() and then hier_mlr would borrow strength across locations — useful when any given location’s sequencing is sparse. That’s a different dataset, not a different script."
+  },
+  {
+    "objectID": "01-variant-forecasting/index.html#fit-both-frequentist-engines",
+    "href": "01-variant-forecasting/index.html#fit-both-frequentist-engines",
+    "title": "Forecasting SARS-CoV-2 Variant Dominance",
+    "section": "Fit both frequentist engines",
+    "text": "Fit both frequentist engines\n\n\nCode\nfit_mlr      &lt;- fit_model(x2, engine = \"mlr\",      horizon = 28L)\nfit_piantham &lt;- fit_model(x2, engine = \"piantham\", horizon = 28L,\n                          generation_time = 5)\n\nga_mlr &lt;- growth_advantage(fit_mlr,      type = \"relative_Rt\", generation_time = 5) |&gt;\n  mutate(engine = \"mlr\")\nga_pt  &lt;- growth_advantage(fit_piantham, type = \"relative_Rt\", generation_time = 5) |&gt;\n  mutate(engine = \"piantham\")\nga_all &lt;- bind_rows(ga_mlr, ga_pt)\n\n\n\n\nCode\nga_all |&gt;\n  filter(lineage != \"Other\") |&gt;\n  ggplot(aes(x = reorder(lineage, estimate), y = estimate,\n             ymin = lower, ymax = upper, colour = engine)) +\n  geom_hline(yintercept = 1, linetype = \"dashed\", colour = \"grey50\") +\n  geom_pointrange(position = position_dodge(width = 0.45),\n                  size = 0.5, linewidth = 0.7) +\n  coord_flip() +\n  scale_colour_manual(values = c(mlr = \"#1565C0\", piantham = \"#E65100\"),\n                      name = \"Engine\") +\n  labs(x = NULL,\n       y = \"Relative Rt (pivot = Other)\",\n       subtitle = \"Above 1: faster than pivot. Below 1: declining.\") +\n  theme_minimal(base_size = 12) +\n  theme(panel.grid.minor = element_blank())\n\n\n\n\n\n\n\n\nFigure 2: Relative Rt of each lineage versus the ‘Other’ pivot, estimated by MLR and by the Piantham Rt approximation. Error bars are 95 % confidence intervals. Both engines agree on the ordering: JN.1 descendants (KP.2, KP.3) sit at the top; HV.1 and XBB.1.5 at the bottom."
+  },
+  {
+    "objectID": "01-variant-forecasting/index.html#day-forecast-mlr",
+    "href": "01-variant-forecasting/index.html#day-forecast-mlr",
+    "title": "Forecasting SARS-CoV-2 Variant Dominance",
+    "section": "28-day forecast (MLR)",
+    "text": "28-day forecast (MLR)\n\n\nCode\nfc &lt;- forecast(fit_mlr, horizon = 28L)\nfc_df &lt;- as.data.frame(fc) |&gt;\n  transmute(date = .date, lineage = .lineage,\n            proportion = .median, lower = .lower, upper = .upper)\n\ncombined &lt;- bind_rows(\n  obs   |&gt; mutate(lower = NA_real_, upper = NA_real_, segment = \"observed\"),\n  fc_df |&gt; mutate(segment = \"forecast\")\n)\n\n\n\n\nCode\ncombined |&gt;\n  filter(lineage != \"Other\") |&gt;\n  ggplot(aes(x = date, colour = lineage, fill = lineage)) +\n  geom_ribbon(aes(ymin = lower, ymax = upper), alpha = 0.2, colour = NA) +\n  geom_line(aes(y = proportion, linetype = segment), linewidth = 0.8) +\n  scale_y_continuous(labels = scales::percent_format(accuracy = 1),\n                     limits = c(0, 1), expand = c(0, 0)) +\n  scale_colour_viridis_d(option = \"turbo\", name = NULL) +\n  scale_fill_viridis_d(option = \"turbo\", name = NULL) +\n  scale_linetype_manual(values = c(observed = \"solid\", forecast = \"dashed\"),\n                        name = NULL) +\n  labs(x = NULL, y = \"Lineage share\") +\n  theme_minimal(base_size = 12) +\n  theme(panel.grid.minor = element_blank())\n\n\n\n\n\n\n\n\nFigure 3: MLR point forecast with 95 % prediction intervals over the next 28 days. Observed trajectories (solid) continue as forecasts (dashed) with shaded uncertainty. KP.3 is projected to keep rising; KP.2 plateaus around 10 %."
+  },
+  {
+    "objectID": "01-variant-forecasting/index.html#rolling-origin-backtest",
+    "href": "01-variant-forecasting/index.html#rolling-origin-backtest",
+    "title": "Forecasting SARS-CoV-2 Variant Dominance",
+    "section": "Rolling-origin backtest",
+    "text": "Rolling-origin backtest\nForecast accuracy is validated by refitting on growing training windows (min 60 days) and scoring predictions at 14- and 28-day horizons.\n\n\nCode\nbt     &lt;- backtest(x2, engines = \"mlr\",\n                   horizons = c(14L, 28L), min_train = 60L)\nscores &lt;- score_forecasts(bt)\n\n\n\n\n\n\nTable 1: Rolling-origin backtest scores for MLR.\n\n\n\n\n\n\nEngine\nHorizon (days)\nMAE\nRMSE\n95 % PI coverage\nWIS\n\n\n\n\nmlr\n14\n0.099\n0.213\n0.641\n0.053\n\n\nmlr\n28\n0.121\n0.253\n0.620\n0.064\n\n\n\n\n\n\n\n\nAt a 14-day horizon, MLR achieves a mean absolute error of 9.9% on lineage-share predictions and covers the true share in 64% of cases — short of the nominal 95 %, reflecting that the naive MLR intervals under-account for over-dispersion in weekly counts. (Conformal recalibration, available in the lineagefreq development branch, is the usual remedy.) At 28 days MAE doubles roughly to 12.1% — ordinary horizon-vs-accuracy drift."
+  },
+  {
+    "objectID": "01-variant-forecasting/index.html#when-does-jn.1-cross-80",
+    "href": "01-variant-forecasting/index.html#when-does-jn.1-cross-80",
+    "title": "Forecasting SARS-CoV-2 Variant Dominance",
+    "section": "When does JN.1 cross 80 %?",
+    "text": "When does JN.1 cross 80 %?\nThe operationally useful summary aggregates JN.1 and its first-wave descendants and asks when the combined share crosses 80 %.\n\n\nCode\njn1_clade &lt;- c(\"JN.1\", \"JN.1.11.1\", \"KP.2\", \"KP.3\")\n\njn1_obs &lt;- obs |&gt;\n  filter(lineage %in% jn1_clade) |&gt;\n  group_by(date) |&gt;\n  summarise(share = sum(proportion), .groups = \"drop\") |&gt;\n  mutate(segment = \"observed\")\n\njn1_fc &lt;- fc_df |&gt;\n  filter(lineage %in% jn1_clade) |&gt;\n  group_by(date) |&gt;\n  summarise(share = sum(proportion), .groups = \"drop\") |&gt;\n  mutate(segment = \"forecast\")\n\njn1_ts &lt;- bind_rows(jn1_obs, jn1_fc) |&gt; arrange(date)\n\ncrossing_row &lt;- jn1_ts |&gt; filter(share &gt;= 0.80) |&gt; slice(1)\ncrossing_date &lt;- if (nrow(crossing_row) &gt; 0) crossing_row$date else NA\n\n\n\n\nCode\njn1_ts |&gt;\n  ggplot(aes(x = date, y = share)) +\n  geom_hline(yintercept = 0.80, linetype = \"dashed\", colour = \"grey40\") +\n  { if (!is.na(crossing_date))\n      geom_vline(xintercept = as.numeric(crossing_date),\n                 linetype = \"dotted\", colour = \"#C62828\") } +\n  geom_line(aes(linetype = segment), colour = \"#1565C0\", linewidth = 1) +\n  { if (!is.na(crossing_date))\n      annotate(\"label\", x = crossing_date, y = 0.83,\n               label = format(crossing_date, \"%d %b %Y\"),\n               colour = \"#C62828\", size = 3.4) } +\n  scale_y_continuous(labels = scales::percent_format(accuracy = 1),\n                     limits = c(0, 1), expand = c(0, 0)) +\n  scale_linetype_manual(values = c(observed = \"solid\", forecast = \"dashed\"),\n                        name = NULL) +\n  labs(x = NULL, y = \"JN.1-clade cumulative share\") +\n  theme_minimal(base_size = 12) +\n  theme(panel.grid.minor = element_blank())\n\n\n\n\n\n\n\n\nFigure 4: Combined share of JN.1 and its first-wave descendants (JN.1, JN.1.11.1, KP.2, KP.3). Dashed horizontal line at the 80 % dominance threshold. The crossing date is the first observed or forecast week at or above 80 %.\n\n\n\n\n\nThe combined JN.1-clade share first reaches 80 % on 03 二月 2024 in the observed-plus-forecast series."
+  },
+  {
+    "objectID": "01-variant-forecasting/index.html#interpretation",
+    "href": "01-variant-forecasting/index.html#interpretation",
+    "title": "Forecasting SARS-CoV-2 Variant Dominance",
+    "section": "Interpretation",
+    "text": "Interpretation\nEngine choice. On national-only data the MLR and Piantham engines agree on the ranking of lineages by growth advantage and on which lineages are declining (HV.1, XBB.1.5) versus growing (JN.1 descendants). Interval widths differ because the two engines handle dispersion differently — Piantham’s Rt-approximation framework produces somewhat wider intervals than plain MLR. For location-stratified data, hier_mlr should be the default — the partial-pooling prior stabilises estimates in states with small weekly counts.\nForecast horizon. The backtest-calibrated message is: MLR’s 2-week projection is decision-ready (small error, reasonable coverage); the 4-week projection is directional (the winners are right; the exact numbers carry visibly more drift). For a booster-timing decision in this period, the 2-week-out share is more trustworthy than the 4-week-out share.\nDecision-relevant answer. Under MLR on data through 22 6月 2024, JN.1-clade dominance (≥ 80 % of sequenced cases) is first reached on 03 2月 2024 in the combined observed-plus-forecast series. Any operational decision should pair this point estimate with the 95 % PI on individual lineage shares and re-run weekly as new CDC data posts."
+  },
+  {
+    "objectID": "01-variant-forecasting/index.html#about-this-analysis",
+    "href": "01-variant-forecasting/index.html#about-this-analysis",
+    "title": "Forecasting SARS-CoV-2 Variant Dominance",
+    "section": "About this analysis",
+    "text": "About this analysis\n\n\n\n\n\n\nNoteEnvironment\n\n\n\n\n\n\nAuthor: Cuiwei Gao\nDate: 2026-04-19\nPackage: lineagefreq v0.2.0\nData: CDC Variant Proportions (cdc_sarscov2_jn1), public domain\nSource: github.com/CuiweiG/portfolio\n\n\n\nCode\nsessionInfo()\n\n\nR version 4.5.3 (2026-03-11 ucrt)\nPlatform: x86_64-w64-mingw32/x64\nRunning under: Windows 11 x64 (build 26200)\n\nMatrix products: default\n  LAPACK version 3.12.1\n\nlocale:\n[1] LC_COLLATE=Chinese (Simplified)_China.utf8 \n[2] LC_CTYPE=Chinese (Simplified)_China.utf8   \n[3] LC_MONETARY=Chinese (Simplified)_China.utf8\n[4] LC_NUMERIC=C                               \n[5] LC_TIME=Chinese (Simplified)_China.utf8    \n\ntime zone: Asia/Singapore\ntzcode source: internal\n\nattached base packages:\n[1] stats     graphics  grDevices utils     datasets  methods   base     \n\nother attached packages:\n[1] dplyr_1.2.1       ggplot2_4.0.2     lineagefreq_0.2.0\n\nloaded via a namespace (and not attached):\n [1] gtable_0.3.6        jsonlite_2.0.0      compiler_4.5.3     \n [4] tidyselect_1.2.1    tidyr_1.3.2         scales_1.4.0       \n [7] yaml_2.3.12         fastmap_1.2.0       R6_2.6.1           \n[10] labeling_0.4.3      generics_0.1.4      knitr_1.51         \n[13] htmlwidgets_1.6.4   MASS_7.3-65         tibble_3.3.1       \n[16] pillar_1.11.1       RColorBrewer_1.1-3  rlang_1.2.0        \n[19] xfun_0.57           S7_0.2.1-1          otel_0.2.0         \n[22] viridisLite_0.4.3   cli_3.6.6           withr_3.0.2        \n[25] magrittr_2.0.5      digest_0.6.39       grid_4.5.3         \n[28] lifecycle_1.0.5     vctrs_0.7.3         evaluate_1.0.5     \n[31] glue_1.8.0          numDeriv_2016.8-1.1 farver_2.1.2       \n[34] rmarkdown_2.31      purrr_1.2.2         tools_4.5.3        \n[37] pkgconfig_2.0.3     htmltools_0.5.9"
   }
 ]

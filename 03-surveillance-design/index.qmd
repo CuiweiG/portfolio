@@ -333,6 +333,25 @@ prevalence. That framing — a *detection probability*, not a
 *detection guarantee* — is the one a programme should be able to
 produce from its design alone, and `survinger` makes it one call.
 
+## Limitations
+
+The delay distribution we fit with `surv_estimate_delay()` is treated as
+stationary across the six-month window; in practice laboratory delays
+lengthen sharply during epidemic peaks (testing backlog, reagent shortages,
+weekend staffing) and shorten during troughs, so a production system would
+refit the delay model weekly rather than once. Neyman allocation also assumes
+stratum-level variances are known; in this simulated dataset they are — the
+ground truth is shipped alongside the data — but a real programme would have
+to estimate them from pilot data, with attendant uncertainty that would widen
+the optimal allocation's credible intervals. We treat the sequencing
+programme in isolation, whereas most surveillance systems run multiple
+pathogens on shared laboratory capacity, a joint-allocation problem we do
+not address. Finally, political and resource constraints — fixed
+per-region agreements, ring-fenced budget lines, unequal sample access —
+are not modelled; the Neyman allocation here is a mathematical optimum, not
+a deployable schedule, and the gap between the two is where most of the
+operational work lives.
+
 ## About this analysis
 
 ::: {.callout-note appearance="minimal" collapse="true"}

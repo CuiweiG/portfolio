@@ -212,6 +212,7 @@ window.Quarto = {
   <li><a href="#step-4-optimal-allocation-of-a-fixed-budget" id="toc-step-4-optimal-allocation-of-a-fixed-budget" class="nav-link" data-scroll-target="#step-4-optimal-allocation-of-a-fixed-budget">Step 4 — Optimal allocation of a fixed budget</a></li>
   <li><a href="#step-5-how-large-a-programme-detects-a-rare-lineage" id="toc-step-5-how-large-a-programme-detects-a-rare-lineage" class="nav-link" data-scroll-target="#step-5-how-large-a-programme-detects-a-rare-lineage">Step 5 — How large a programme detects a rare lineage?</a></li>
   <li><a href="#interpretation" id="toc-interpretation" class="nav-link" data-scroll-target="#interpretation">Interpretation</a></li>
+  <li><a href="#limitations" id="toc-limitations" class="nav-link" data-scroll-target="#limitations">Limitations</a></li>
   <li><a href="#about-this-analysis" id="toc-about-this-analysis" class="nav-link" data-scroll-target="#about-this-analysis">About this analysis</a></li>
   </ul>
 </nav>
@@ -589,6 +590,10 @@ Figure&nbsp;4: Overall detection probability in a single week as a function of a
 <p><strong>Bias is a design problem, not a model problem.</strong> Switching from naive pooling to the Hajek estimator cut MAE by roughly 0.6× on this dataset; the cost was one line of code and the sequencing-rate table that the programme already maintains for its own reporting. Any downstream use of surveillance estimates — nowcasts, forecasts, growth-advantage fits — should start from a design-adjusted estimator, not a raw pooled one.</p>
 <p><strong>Budgets aren’t obvious.</strong> The current allocation was proportional to sequencing <em>rates</em> (which track programme capacity). The Neyman-optimal allocation redistributes toward the stratum whose variance contribution to the overall estimate is largest. For this programme, that is Region D — currently under-sequenced relative to its information content. Reallocating weekly capacity accordingly would be a zero-cost improvement to overall-prevalence precision.</p>
 <p><strong>Early-warning realism.</strong> At current capacity, detecting a 1 %-prevalence emerging variant within a single week is essentially a coin-flip. Reaching a 90 % one-week detection probability requires either more sequences per week or for the variant to already be past ~3 % prevalence. That framing — a <em>detection probability</em>, not a <em>detection guarantee</em> — is the one a programme should be able to produce from its design alone, and <code>survinger</code> makes it one call.</p>
+</section>
+<section id="limitations" class="level2">
+<h2 class="anchored" data-anchor-id="limitations">Limitations</h2>
+<p>The delay distribution we fit with <code>surv_estimate_delay()</code> is treated as stationary across the six-month window; in practice laboratory delays lengthen sharply during epidemic peaks (testing backlog, reagent shortages, weekend staffing) and shorten during troughs, so a production system would refit the delay model weekly rather than once. Neyman allocation also assumes stratum-level variances are known; in this simulated dataset they are — the ground truth is shipped alongside the data — but a real programme would have to estimate them from pilot data, with attendant uncertainty that would widen the optimal allocation’s credible intervals. We treat the sequencing programme in isolation, whereas most surveillance systems run multiple pathogens on shared laboratory capacity, a joint-allocation problem we do not address. Finally, political and resource constraints — fixed per-region agreements, ring-fenced budget lines, unequal sample access — are not modelled; the Neyman allocation here is a mathematical optimum, not a deployable schedule, and the gap between the two is where most of the operational work lives.</p>
 </section>
 <section id="about-this-analysis" class="level2">
 <h2 class="anchored" data-anchor-id="about-this-analysis">About this analysis</h2>
@@ -1454,21 +1459,40 @@ loaded via a namespace (and not attached):
 <span id="cb18-359"><a href="#cb18-359" aria-hidden="true" tabindex="-1"></a>*detection guarantee* — is the one a programme should be able to</span>
 <span id="cb18-360"><a href="#cb18-360" aria-hidden="true" tabindex="-1"></a>produce from its design alone, and <span class="in">`survinger`</span> makes it one call.</span>
 <span id="cb18-361"><a href="#cb18-361" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-362"><a href="#cb18-362" aria-hidden="true" tabindex="-1"></a><span class="fu">## About this analysis</span></span>
+<span id="cb18-362"><a href="#cb18-362" aria-hidden="true" tabindex="-1"></a><span class="fu">## Limitations</span></span>
 <span id="cb18-363"><a href="#cb18-363" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-364"><a href="#cb18-364" aria-hidden="true" tabindex="-1"></a>::: {.callout-note appearance="minimal" collapse="true"}</span>
-<span id="cb18-365"><a href="#cb18-365" aria-hidden="true" tabindex="-1"></a><span class="fu">## Environment</span></span>
-<span id="cb18-366"><a href="#cb18-366" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Author:** Cuiwei Gao</span>
-<span id="cb18-367"><a href="#cb18-367" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Date:** 2026-04-19</span>
-<span id="cb18-368"><a href="#cb18-368" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Package:** <span class="in">`survinger`</span> v<span class="in">`r packageVersion("survinger")`</span></span>
-<span id="cb18-369"><a href="#cb18-369" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Data:** <span class="in">`sarscov2_surveillance`</span> (simulated 5-region, 26-week SARS-CoV-2 programme shipped with <span class="in">`survinger`</span>)</span>
-<span id="cb18-370"><a href="#cb18-370" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Source:** <span class="co">[</span><span class="ot">github.com/CuiweiG/portfolio</span><span class="co">](https://github.com/CuiweiG/portfolio/tree/main/03-surveillance-design)</span></span>
-<span id="cb18-371"><a href="#cb18-371" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-374"><a href="#cb18-374" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb18-375"><a href="#cb18-375" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: session</span></span>
-<span id="cb18-376"><a href="#cb18-376" aria-hidden="true" tabindex="-1"></a><span class="fu">sessionInfo</span>()</span>
-<span id="cb18-377"><a href="#cb18-377" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb18-378"><a href="#cb18-378" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb18-364"><a href="#cb18-364" aria-hidden="true" tabindex="-1"></a>The delay distribution we fit with <span class="in">`surv_estimate_delay()`</span> is treated as</span>
+<span id="cb18-365"><a href="#cb18-365" aria-hidden="true" tabindex="-1"></a>stationary across the six-month window; in practice laboratory delays</span>
+<span id="cb18-366"><a href="#cb18-366" aria-hidden="true" tabindex="-1"></a>lengthen sharply during epidemic peaks (testing backlog, reagent shortages,</span>
+<span id="cb18-367"><a href="#cb18-367" aria-hidden="true" tabindex="-1"></a>weekend staffing) and shorten during troughs, so a production system would</span>
+<span id="cb18-368"><a href="#cb18-368" aria-hidden="true" tabindex="-1"></a>refit the delay model weekly rather than once. Neyman allocation also assumes</span>
+<span id="cb18-369"><a href="#cb18-369" aria-hidden="true" tabindex="-1"></a>stratum-level variances are known; in this simulated dataset they are — the</span>
+<span id="cb18-370"><a href="#cb18-370" aria-hidden="true" tabindex="-1"></a>ground truth is shipped alongside the data — but a real programme would have</span>
+<span id="cb18-371"><a href="#cb18-371" aria-hidden="true" tabindex="-1"></a>to estimate them from pilot data, with attendant uncertainty that would widen</span>
+<span id="cb18-372"><a href="#cb18-372" aria-hidden="true" tabindex="-1"></a>the optimal allocation's credible intervals. We treat the sequencing</span>
+<span id="cb18-373"><a href="#cb18-373" aria-hidden="true" tabindex="-1"></a>programme in isolation, whereas most surveillance systems run multiple</span>
+<span id="cb18-374"><a href="#cb18-374" aria-hidden="true" tabindex="-1"></a>pathogens on shared laboratory capacity, a joint-allocation problem we do</span>
+<span id="cb18-375"><a href="#cb18-375" aria-hidden="true" tabindex="-1"></a>not address. Finally, political and resource constraints — fixed</span>
+<span id="cb18-376"><a href="#cb18-376" aria-hidden="true" tabindex="-1"></a>per-region agreements, ring-fenced budget lines, unequal sample access —</span>
+<span id="cb18-377"><a href="#cb18-377" aria-hidden="true" tabindex="-1"></a>are not modelled; the Neyman allocation here is a mathematical optimum, not</span>
+<span id="cb18-378"><a href="#cb18-378" aria-hidden="true" tabindex="-1"></a>a deployable schedule, and the gap between the two is where most of the</span>
+<span id="cb18-379"><a href="#cb18-379" aria-hidden="true" tabindex="-1"></a>operational work lives.</span>
+<span id="cb18-380"><a href="#cb18-380" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-381"><a href="#cb18-381" aria-hidden="true" tabindex="-1"></a><span class="fu">## About this analysis</span></span>
+<span id="cb18-382"><a href="#cb18-382" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-383"><a href="#cb18-383" aria-hidden="true" tabindex="-1"></a>::: {.callout-note appearance="minimal" collapse="true"}</span>
+<span id="cb18-384"><a href="#cb18-384" aria-hidden="true" tabindex="-1"></a><span class="fu">## Environment</span></span>
+<span id="cb18-385"><a href="#cb18-385" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Author:** Cuiwei Gao</span>
+<span id="cb18-386"><a href="#cb18-386" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Date:** 2026-04-19</span>
+<span id="cb18-387"><a href="#cb18-387" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Package:** <span class="in">`survinger`</span> v<span class="in">`r packageVersion("survinger")`</span></span>
+<span id="cb18-388"><a href="#cb18-388" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Data:** <span class="in">`sarscov2_surveillance`</span> (simulated 5-region, 26-week SARS-CoV-2 programme shipped with <span class="in">`survinger`</span>)</span>
+<span id="cb18-389"><a href="#cb18-389" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Source:** <span class="co">[</span><span class="ot">github.com/CuiweiG/portfolio</span><span class="co">](https://github.com/CuiweiG/portfolio/tree/main/03-surveillance-design)</span></span>
+<span id="cb18-390"><a href="#cb18-390" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-393"><a href="#cb18-393" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb18-394"><a href="#cb18-394" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: session</span></span>
+<span id="cb18-395"><a href="#cb18-395" aria-hidden="true" tabindex="-1"></a><span class="fu">sessionInfo</span>()</span>
+<span id="cb18-396"><a href="#cb18-396" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb18-397"><a href="#cb18-397" aria-hidden="true" tabindex="-1"></a>:::</span>
 </code></pre></div><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
 </div></div></div></div></div>
 </div> <!-- /content -->

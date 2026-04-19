@@ -1,0 +1,21 @@
+# Quarto
+.quarto/
+_freeze/
+_site/
+
+# R
+.Rproj.user/
+.Rhistory
+.RData
+.Ruserdata
+*.Rproj
+
+# Editor / OS
+.vscode/
+.DS_Store
+Thumbs.db
+*.swp
+*~
+
+/.quarto/
+**/*.quarto_ipynb

@@ -1,0 +1,23 @@
+[
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Cuiwei Gao — Portfolio",
+    "section": "",
+    "text": "Four end-to-end case studies using R packages I’ve published to CRAN. Each pairs a real public-health question with working code, real data, and decision-relevant interpretation. Source is in the repo footer; every figure is reproducible from the accompanying .qmd."
+  },
+  {
+    "objectID": "index.html#case-studies",
+    "href": "index.html#case-studies",
+    "title": "Cuiwei Gao — Portfolio",
+    "section": "Case studies",
+    "text": "Case studies\n\n01 · Forecasting SARS-CoV-2 Variant Dominance\nMulti-engine variant forecasting and rolling-origin backtest on U.S. CDC JN.1 surveillance data, using the lineagefreq package.\n\n\n02 · Post-hoc Fairness Audit of a Deployed Risk Score (COMPAS)\nAuditing an already-deployed risk score for group-wise disparities, four-fifths rule screening, and equalized-odds threshold optimisation with clinicalfair.\n\n\n03 · Optimising Sequencing Budgets for Pathogen Surveillance\nDesign-adjusted prevalence, delay-corrected nowcasts, and Neyman allocation under a fixed sequencing budget with survinger.\n\n\n04 · Releasing Synthetic Clinical Data: a Privacy-Utility Analysis\nComparing three synthesis methods against distributional fidelity, correlation preservation, privacy, and downstream model fidelity with syntheticdata."
+  },
+  {
+    "objectID": "index.html#about",
+    "href": "index.html#about",
+    "title": "Cuiwei Gao — Portfolio",
+    "section": "About",
+    "text": "About\nWritten and maintained by Cuiwei Gao. Based in London. Research interests: R package development for biostatistics and public health, genomic surveillance methodology, algorithmic fairness in clinical AI, and privacy-preserving synthetic clinical data.\nSource for every analysis: github.com/CuiweiG/portfolio."
+  }
+]

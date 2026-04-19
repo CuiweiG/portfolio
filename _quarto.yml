@@ -1,0 +1,49 @@
+project:
+  type: website
+  output-dir: docs
+  render:
+    - "*.qmd"
+    - "!README.md"
+
+website:
+  title: "Cuiwei Gao — Portfolio"
+  description: "Applied R analyses in biostatistics, genomic surveillance, and clinical AI"
+  site-url: https://cuiweig.github.io/portfolio
+  navbar:
+    left:
+      - href: index.qmd
+        text: Home
+      - href: 01-variant-forecasting/index.qmd
+        text: Variant Forecasting
+      - href: 02-fair-clinical-prediction/index.qmd
+        text: Clinical Fairness
+      - href: 03-surveillance-design/index.qmd
+        text: Surveillance Design
+      - href: 04-synthetic-data-release/index.qmd
+        text: Synthetic Data
+    right:
+      - icon: github
+        href: https://github.com/CuiweiG/portfolio
+      - text: Main site
+        href: https://cuiweig.github.io
+  page-footer:
+    left: "© 2026 Cuiwei Gao"
+    right: "Built with [Quarto](https://quarto.org)"
+
+format:
+  html:
+    theme: cosmo
+    toc: true
+    toc-depth: 3
+    code-fold: true
+    code-tools: true
+    embed-resources: false
+    highlight-style: github
+    fig-width: 8
+    fig-height: 5
+    fig-dpi: 150
+    fig-align: center
+    link-external-newwindow: true
+
+execute:
+  freeze: auto

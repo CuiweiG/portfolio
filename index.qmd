@@ -1,0 +1,47 @@
+---
+title: "Cuiwei Gao — Portfolio"
+subtitle: "Applied analyses in R for biostatistics, genomic surveillance, and clinical AI"
+page-layout: full
+---
+
+Four end-to-end case studies using R packages I've published to CRAN.
+Each pairs a real public-health question with working code, real data,
+and decision-relevant interpretation. Source is in the repo footer;
+every figure is reproducible from the accompanying `.qmd`.
+
+## Case studies
+
+### [01 · Forecasting SARS-CoV-2 Variant Dominance](01-variant-forecasting/index.html)
+
+Multi-engine variant forecasting and rolling-origin backtest on U.S.
+CDC JN.1 surveillance data, using the **[`lineagefreq`](https://CRAN.R-project.org/package=lineagefreq)**
+package.
+
+### [02 · Post-hoc Fairness Audit of a Deployed Risk Score (COMPAS)](02-fair-clinical-prediction/index.html)
+
+Auditing an already-deployed risk score for group-wise disparities,
+four-fifths rule screening, and equalized-odds threshold optimisation
+with **[`clinicalfair`](https://CRAN.R-project.org/package=clinicalfair)**.
+
+### [03 · Optimising Sequencing Budgets for Pathogen Surveillance](03-surveillance-design/index.html)
+
+Design-adjusted prevalence, delay-corrected nowcasts, and Neyman
+allocation under a fixed sequencing budget with **[`survinger`](https://CRAN.R-project.org/package=survinger)**.
+
+### [04 · Releasing Synthetic Clinical Data: a Privacy-Utility Analysis](04-synthetic-data-release/index.html)
+
+Comparing three synthesis methods against distributional fidelity,
+correlation preservation, privacy, and downstream model fidelity with
+**[`syntheticdata`](https://CRAN.R-project.org/package=syntheticdata)**.
+
+---
+
+## About
+
+Written and maintained by [Cuiwei Gao](https://github.com/CuiweiG).
+Based in London. Research interests: R package development for
+biostatistics and public health, genomic surveillance methodology,
+algorithmic fairness in clinical AI, and privacy-preserving synthetic
+clinical data.
+
+Source for every analysis: [github.com/CuiweiG/portfolio](https://github.com/CuiweiG/portfolio).
